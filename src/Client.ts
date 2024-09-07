@@ -9,7 +9,7 @@ import {
   createListing,
   type CreateListingOptions,
   displayError,
-  type ListingCreationParams,
+  type ListingCreationParams, load,
   selectWallet,
   success
 } from '@/lib/app'
@@ -216,10 +216,11 @@ export class ArcpayClient {
       throw error
     }
   }
-  public async testAppCall(params): Promise<Transaction> {
+  public async testAppCall(params): Promise<TransactionConfirmation> {
   try {
     await selectWallet(this._appProvider)
-    const transactionConfirmation = new Transaction(this._walletManager.algodClient, {fromAddress: params.fromAddress, appIndex: params.appIndex})
+    load(this._appProvider, 'Awaiting transaction confirmation', 'Please check your wallet and sign the transaction.')
+    const transactionConfirmation = await new Transaction(this._walletManager.algodClient, {fromAddress: params.fromAddress, appIndex: params.appIndex})
       .call(params.appName, params.args, params.accounts, params.foreignApps, params.foreignAssets)
       .send(this._walletManager.transactionSigner)
       return transactionConfirmation
