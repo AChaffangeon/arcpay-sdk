@@ -85,6 +85,7 @@ function disconnectWallet() {
 
 async function selectAccount(account: WalletAccount) {
   if (callback && account) {
+
     callback(account)
   } else {
     throw {message: 'Unexpected error: WalletSelectionCallback not provided'}

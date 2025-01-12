@@ -215,6 +215,29 @@ export class ArcpayClient {
         }
     }
 
+    public async update(id: string): Promise<TransactionConfirmation | undefined> {
+        try {
+            const {data: listingParams, error} = await getListingById(this._client, id)
+            if (error) throw new Error(`Unable to fetch listing: ${error.message}`)
+
+            if (listingParams && listingParams.asset_id) {
+                const account: WalletAccount = await selectWallet(this._appProvider)
+                const transactionConfirmation = await update(this._appProvider, this._walletManager, account, listingParams)
+                success(this._appProvider, 'Success!', 'Listing has been updated', () => {
+                    closeDialog()
+                })
+                return transactionConfirmation
+            }
+        } catch (error) {
+            //@ts-ignore
+            const message = error.message || 'Unknown Error'
+            displayError(this._appProvider, 'Error', message, () => {
+                closeDialog()
+            })
+            throw error
+        }
+    }
+
     public async close(id: string): Promise<TransactionConfirmation | undefined> {
         try {
             const {data: listingParams, error} = await getListingById(this._client, id)

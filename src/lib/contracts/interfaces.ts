@@ -24,6 +24,15 @@ type FundApp = (
     ...args: any[]
 ) => Promise<TransactionConfirmation>;
 
+type Update = (
+  algod: Algodv2,
+  signer: TransactionSigner,
+  fromAddress: string,
+  appIndex: number,
+  price: number,
+  ...args: any[]
+) => Promise<TransactionConfirmation>;
+
 type Buy = (
     algod: Algodv2,
     signer: TransactionSigner,
@@ -49,6 +58,7 @@ export interface SaleInterface {
     create: CreateApp;
     fund: FundApp;
     buy: Buy;
+    update: Update;
 }
 
 export interface AuctionInterface {
@@ -192,6 +202,15 @@ export const interfaces: Interfaces = {
                         .preValidate([sellerAddress], [nftAppID])
                         .pay(price)
                         .call('buy', [], [feesAppAddress], [feesAppId])
+                        .send(signer),
+                    update: (
+                        algod: Algodv2,
+                        signer: TransactionSigner,
+                        fromAddress: string,
+                        appIndex: number,
+                        price: number,
+                      ) => new Transaction(algod, {fromAddress, appIndex})
+                        .call('update', [longToByteArray(price, 8)])
                         .send(signer)
                 },
                 auction: {

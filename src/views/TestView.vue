@@ -5,7 +5,7 @@ import {ref} from 'vue'
 
 const listingId = ref('')
 
-const arcpay = useArcpay('algo:testnet')
+const arcpay = useArcpay('voi:testnet')
 
 function create() {
   arcpay.create({assetId: '29105406/583'}).then((data) => {
@@ -32,6 +32,16 @@ function buy() {
   if (listingId.value) {
     arcpay.buy(listingId.value).then((data) => {
       console.log('Listing bought', data)
+    }).catch((error) => {
+      console.error(error)
+    })
+  }
+}
+
+function update() {
+  if (listingId.value) {
+    arcpay.update(listingId.value).then((data) => {
+      console.log('Listing updated', data)
     }).catch((error) => {
       console.error(error)
     })
@@ -66,6 +76,7 @@ async function cancel() {
       <Button variant="default" @click="create">create</Button>
         <Button variant="default" @click="createOffchain()">create offchain</Button>
       <Button variant="default" @click="buy">buy</Button>
+      <Button variant="default" @click="update">update</Button>
       <Button variant="default" @click="cancel">cancel</Button>
       <Button variant="default" @click="close">close</Button>
       <input v-model="listingId" placeholder="listing id" type="text"/>
